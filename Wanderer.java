@@ -1,28 +1,19 @@
-/**
- * Class yang merepresentasikan data Pengembara (Wanderer) pada BurhanQuest v2.
- * Semua atribut bersifat private. Level pengembara selalu dimulai dari 1.
- */
+// utk simpen data pengembara, ngecek level up, dll
 public class Wanderer {
 
-    /** Batas maksimum exp pengembara. */
+    // batas max exp, ga bisa lebih dari ini
     private static final int MAX_EXP = 1_310_720_000;
 
-    private String id;
+    private String id;       // format "P1", "P2", dst
     private String name;
     private String username;
     private String password;
-    private int level;
-    private int exp;
-    private int coins;
-    private String status;
+    private int level;       // mulai dari 1
+    private int exp;         // mulai dari 0
+    private int coins;       // mulai dari 0
+    private String status;   // kosong / dalam quest
 
-    /**
-     * Constructor Wanderer.
-     * @param idNumber Nomor urut pengembara (ID = "P" + idNumber)
-     * @param name     Nama pengembara
-     * @param username Username untuk login
-     * @param password Password untuk login
-     */
+    // constructor, semua pengembara baru mulai dari level 1, exp 0, coins 0
     public Wanderer(int idNumber, String name, String username, String password) {
         this.id = "P" + idNumber;
         this.name = name;
@@ -34,45 +25,22 @@ public class Wanderer {
         this.status = "kosong";
     }
 
-    // ===================== Getters =====================
+    // --- getters ---
 
-    /** @return ID pengembara (format "P" + nomor) */
     public String getId() { return id; }
-
-    /** @return Nama pengembara */
     public String getName() { return name; }
-
-    /** @return Username pengembara */
     public String getUsername() { return username; }
-
-    /** @return Password pengembara */
     public String getPassword() { return password; }
-
-    /** @return Level pengembara */
     public int getLevel() { return level; }
-
-    /** @return Exp pengembara */
     public int getExp() { return exp; }
-
-    /** @return Jumlah koin pengembara */
     public int getCoins() { return coins; }
-
-    /** @return Status pengembara ("kosong" atau "dalam quest") */
     public String getStatus() { return status; }
 
-    // ===================== Status & Checks =====================
-
-    /** @return true jika status == "kosong" */
+    // true kalau pengembara lagi ga ngerjain quest apapun
     public boolean isAvailable() { return status.equals("kosong"); }
 
-    /**
-     * Mengecek apakah pengembara memenuhi syarat level untuk mengambil quest.
-     * - "mudah": semua level boleh
-     * - "menengah": minimal level 6
-     * - "sulit": minimal level 16
-     * @param difficulty Tingkat kesulitan quest
-     * @return true jika pengembara boleh mengambil quest tersebut
-     */
+    // ngecek apakah level pengembara cukup buat ngambil quest ini
+    // mudah = semua level boleh, menengah = min 6, sulit = min 16
     public boolean canTakeQuest(String difficulty) {
         String d = difficulty.toLowerCase();
         if (d.equals("mudah")) return true;
@@ -81,31 +49,20 @@ public class Wanderer {
         return false;
     }
 
-    /**
-     * Mengecek kecocokan username dan password.
-     * @param username Username yang diinput
-     * @param password Password yang diinput
-     * @return true jika cocok
-     */
+    // ngecek username sama password, buat login
     public boolean authenticate(String username, String password) {
         return this.username.equals(username) && this.password.equals(password);
     }
 
-    // ===================== Quest Methods =====================
-
-    /** Mengubah status pengembara menjadi "dalam quest". */
+    // ubah status jadi "dalam quest" pas pengembara ngambil quest
     public void startQuest() {
         this.status = "dalam quest";
     }
 
-    /**
-     * Menyelesaikan quest: menambah exp, koin, mengecek level up, dan mengubah status kembali ke "kosong".
-     * @param questExp    Exp yang didapatkan dari quest
-     * @param questReward Koin yang didapatkan dari quest
-     * @return String berisi informasi exp, koin, dan level up
-     */
+    // dipanggil waktu quest selesai
+    // nambahin exp dan koin, ngecek level up, terus balik status ke kosong
     public String completeQuest(int questExp, int questReward) {
-        this.exp = Math.min(this.exp + questExp, MAX_EXP);
+        this.exp = Math.min(this.exp + questExp, MAX_EXP); // exp ga boleh melebihi MAX_EXP
         this.coins += questReward;
 
         StringBuilder sb = new StringBuilder();
@@ -114,22 +71,17 @@ public class Wanderer {
         sb.append("Koin didapatkan: ").append(questReward).append("\n");
         sb.append("Total Koin: ").append(this.coins);
 
-        // Cek level up selama level < 20 dan exp memenuhi threshold
+        // cek terus apakah exp udah cukup buat level up, selama belum level 20
         while (level < 20 && this.exp >= getNextLevelExp(level)) {
             level++;
             sb.append("\nLevel pengembara naik menjadi: ").append(level);
         }
 
-        this.status = "kosong";
+        this.status = "kosong"; // quest kelar, status balik kosong
         return sb.toString();
     }
 
-    // ===================== Display =====================
-
-    /**
-     * Mengembalikan informasi pengembara yang terformat untuk ditampilkan.
-     * @return String informasi pengembara
-     */
+    // format string buat nampilin info pengembara
     public String getDisplayString() {
         return "ID Pengembara: " + id + "\n"
              + "Nama Pengembara: " + name + "\n"
@@ -140,17 +92,10 @@ public class Wanderer {
              + "Status Pengembara: " + status;
     }
 
-    // ===================== Recursive Level Threshold =====================
-
-    /**
-     * Menghitung threshold exp untuk naik ke level berikutnya (rekursif).
-     * Base case: level 1 → 5000
-     * Recursive case: 2 * getNextLevelExp(currentLevel - 1)
-     * @param currentLevel Level saat ini
-     * @return Jumlah exp yang dibutuhkan untuk naik ke level berikutnya
-     */
+    // ngitung berapa exp yang dibutuhin buat naik ke level berikutnya
+    // pake rekursi: level 1 butuh 5000, level berikutnya selalu 2x lipat
     public int getNextLevelExp(int currentLevel) {
-        if (currentLevel == 1) return 5000;
-        return 2 * getNextLevelExp(currentLevel - 1);
+        if (currentLevel == 1) return 5000; // base case
+        return 2 * getNextLevelExp(currentLevel - 1); // recursive case
     }
 }

@@ -1,19 +1,16 @@
 import java.util.Scanner;
 
-/**
- * Class utama program BurhanQuest v2.
- * Mengatur seluruh Input/Output. Tidak mengandung logika bisnis.
- *
- * Nama  : Marclay Ardell Taufiqurrachman Harahap
- * NPM   : 2506621024
- */
+// class utama, cuma ngurusin input output
+// logika bisnis semuanya di gamemanager
+// nama  : marclay ardell taufiqurrachman harahap
+// npm   : 2506621024
 public class Main2506621024 {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         GameManager gm = new GameManager();
 
-        // Cetak Banner ASCII Art
+        // cetak banner ascii art
         System.out.println("                               ,,                                       ");
         System.out.println("`7MM\"\"\"Yp,                   `7MM                                       ");
         System.out.println("  MM    Yb                     MM                                       ");
@@ -34,7 +31,7 @@ public class Main2506621024 {
 
         System.out.println("Selamat datang di BurhanQuest!");
 
-        // Loop utama program
+        // loop utama, jalan terus sampai user milih keluar
         boolean running = true;
         while (running) {
             System.out.println("\n=== Hari ke-" + gm.getCurrentDay() + " ===");
@@ -53,18 +50,13 @@ public class Main2506621024 {
                     running = false;
                     break;
                 default:
-                    // Pilihan tidak dikenal, ulang loop
                     break;
             }
         }
         sc.close();
     }
 
-    // ===================== Login Handler =====================
-
-    /**
-     * Menangani proses login pengguna.
-     */
+    // minta username + password, terus arahkan ke menu yang sesuai
     private static void handleLogin(Scanner sc, GameManager gm) {
         System.out.print("Masukkan username: ");
         String username = sc.nextLine();
@@ -78,17 +70,14 @@ public class Main2506621024 {
             System.out.println("Login berhasil! Selamat datang, Admin.");
             handleAdminMenu(sc, gm);
         } else {
+            // result = nama pengembara
             System.out.println("Login berhasil! Selamat datang, " + result + ".");
             String wandererId = gm.getWandererIdByUsername(username);
             handleWandererMenu(sc, gm, result, wandererId);
         }
     }
 
-    // ===================== Admin Menu =====================
-
-    /**
-     * Menampilkan dan menangani Menu Admin.
-     */
+    // menu admin, ada 9 opsi + keluar
     private static void handleAdminMenu(Scanner sc, GameManager gm) {
         boolean loggedIn = true;
         while (loggedIn) {
@@ -144,11 +133,7 @@ public class Main2506621024 {
         }
     }
 
-    // ===================== Tambah Quest =====================
-
-    /**
-     * Menangani alur tambah quest dengan re-prompt bila input tidak valid.
-     */
+    // input data quest baru, kalau ada yang salah minta ulang dari awal
     private static void handleAddQuest(Scanner sc, GameManager gm) {
         boolean added = false;
         while (!added) {
@@ -176,11 +161,7 @@ public class Main2506621024 {
         }
     }
 
-    // ===================== Tambah Pengembara =====================
-
-    /**
-     * Menangani alur tambah pengembara dengan re-prompt bila input tidak valid.
-     */
+    // input data pengembara baru, ada tiga kemungkinan: sukses, username dipakai, atau input salah
     private static void handleAddWanderer(Scanner sc, GameManager gm) {
         boolean added = false;
         while (!added) {
@@ -198,19 +179,14 @@ public class Main2506621024 {
                 added = true;
             } else if (result.equals("username_taken")) {
                 System.out.println("Username sudah digunakan. Harap pilih username lain.");
-                // Tidak set added = true, loop ulang
+                // loop lagi, minta input ulang
             } else {
-                // invalid
                 System.out.println("Input tidak valid. Harap masukkan data dengan benar.");
             }
         }
     }
 
-    // ===================== Filter Quest =====================
-
-    /**
-     * Menangani submenu filter daftar quest.
-     */
+    // submenu filter quest, bisa filter by status atau difficulty
     private static void handleFilterQuest(Scanner sc, GameManager gm) {
         boolean inFilterMenu = true;
         while (inFilterMenu) {
@@ -253,11 +229,7 @@ public class Main2506621024 {
         }
     }
 
-    // ===================== Filter Wanderer =====================
-
-    /**
-     * Menangani submenu filter daftar pengembara.
-     */
+    // submenu filter pengembara, bisa filter by status atau rentang level
     private static void handleFilterWanderer(Scanner sc, GameManager gm) {
         boolean inFilterMenu = true;
         while (inFilterMenu) {
@@ -297,6 +269,7 @@ public class Main2506621024 {
                     inFilterMenu = false;
                     continue;
                 }
+                // kedua input harus angka positif
                 if (gm.isValidPositiveInt(minStr) && gm.isValidPositiveInt(maxStr)) {
                     int min = Integer.parseInt(minStr);
                     int max = Integer.parseInt(maxStr);
@@ -311,11 +284,7 @@ public class Main2506621024 {
         }
     }
 
-    // ===================== Sort Quest =====================
-
-    /**
-     * Menangani submenu pengurutan daftar quest.
-     */
+    // submenu sorting quest, bisa by difficulty atau reward, pilih asc/desc
     private static void handleSortQuest(Scanner sc, GameManager gm) {
         boolean inSortMenu = true;
         while (inSortMenu) {
@@ -350,11 +319,7 @@ public class Main2506621024 {
         }
     }
 
-    // ===================== Sort Wanderer =====================
-
-    /**
-     * Menangani submenu pengurutan daftar pengembara.
-     */
+    // submenu sorting pengembara, bisa by nama atau level, pilih asc/desc
     private static void handleSortWanderer(Scanner sc, GameManager gm) {
         boolean inSortMenu = true;
         while (inSortMenu) {
@@ -389,14 +354,7 @@ public class Main2506621024 {
         }
     }
 
-    // ===================== Wanderer Menu =====================
-
-    /**
-     * Menampilkan dan menangani Menu Pengembara.
-     * @param gm         Instance GameManager
-     * @param name       Nama pengembara yang login
-     * @param wandererId ID pengembara yang login
-     */
+    // menu pengembara, lebih terbatas dari admin (ga bisa lihat pengembara lain)
     private static void handleWandererMenu(Scanner sc, GameManager gm,
                                            String name, String wandererId) {
         boolean loggedIn = true;
@@ -419,10 +377,10 @@ public class Main2506621024 {
                     System.out.println(gm.getQuestsDisplay());
                     break;
                 case "3":
-                    handleFilterQuest(sc, gm);
+                    handleFilterQuest(sc, gm); // sama persis dengan filter di admin
                     break;
                 case "4":
-                    handleSortQuest(sc, gm);
+                    handleSortQuest(sc, gm); // sama persis dengan sort di admin
                     break;
                 case "5":
                     handleTakeQuest(sc, gm, wandererId);
@@ -437,19 +395,14 @@ public class Main2506621024 {
         }
     }
 
-    // ===================== Take Quest Handler =====================
-
-    /**
-     * Menangani alur pengambilan quest oleh pengembara.
-     */
+    // pengembara ambil quest, ada loop sampai berhasil atau cancel
     private static void handleTakeQuest(Scanner sc, GameManager gm, String wandererId) {
-        // Cek apakah sedang dalam quest
+        // langsung cek dulu, kalau lagi dalam quest ga perlu tanya id quest
         if (gm.isWandererInQuest(wandererId)) {
             System.out.println("Kamu sedang dalam quest. Selesaikan quest terlebih dahulu.");
             return;
         }
 
-        // Loop sampai quest berhasil diambil atau pengguna membatalkan
         boolean taking = true;
         while (taking) {
             System.out.print("Masukkan ID Quest yang ingin diambil (atau 'X'/'x' untuk kembali): ");

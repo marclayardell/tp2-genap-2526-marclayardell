@@ -1,30 +1,18 @@
-/**
- * Class yang merepresentasikan data Quest pada sistem BurhanQuest v2.
- * Semua atribut bersifat private, diakses melalui getter.
- */
+// class utk nyimpen data quest
 public class Quest {
 
-    private String id;
+    private String id;           // format "Q1", "Q2", dst
     private String name;
     private String description;
-    private int reward;
-    private int bonusExp;
-    private String difficulty;
-    private String status;
-    private String assignedWandererId;
-    private int daysRequired;
-    private int dayTaken;
+    private int reward;          // reward koin
+    private int bonusExp;        // bonus exp yang didapet
+    private String difficulty;   // mudah / menengah / sulit
+    private String status;       // tersedia / diambil / selesai
+    private String assignedWandererId; // id pengembara yang lagi ngambil quest ini
+    private int daysRequired;    // butuh berapa hari buat selesain
+    private int dayTaken;        // hari berapa quest ini diambil
 
-    /**
-     * Constructor Quest.
-     * @param idNumber  Nomor urut quest (ID = "Q" + idNumber)
-     * @param name      Nama quest
-     * @param description Deskripsi quest
-     * @param reward    Reward koin
-     * @param bonusExp  Bonus experience point
-     * @param difficulty Tingkat kesulitan ("mudah", "menengah", "sulit")
-     * @param daysRequired Durasi hari yang diperlukan
-     */
+    // constructor, bikin quest baru
     public Quest(int idNumber, String name, String description,
                  int reward, int bonusExp, String difficulty, int daysRequired) {
         this.id = "Q" + idNumber;
@@ -34,86 +22,54 @@ public class Quest {
         this.bonusExp = bonusExp;
         this.difficulty = difficulty.toLowerCase();
         this.daysRequired = daysRequired;
-        this.status = "tersedia";
+        this.status = "tersedia"; // default pas pertama dibuat
         this.assignedWandererId = "";
         this.dayTaken = 0;
     }
 
-    // ===================== Getters =====================
+    // --- getters ---
 
-    /** @return ID quest (format "Q" + nomor) */
     public String getId() { return id; }
-
-    /** @return Nama quest */
     public String getName() { return name; }
-
-    /** @return Deskripsi quest */
     public String getDescription() { return description; }
-
-    /** @return Reward koin quest */
     public int getReward() { return reward; }
-
-    /** @return Bonus exp quest */
     public int getBonusExp() { return bonusExp; }
-
-    /** @return Tingkat kesulitan quest */
     public String getDifficulty() { return difficulty; }
-
-    /** @return Status quest ("tersedia", "diambil", "selesai") */
     public String getStatus() { return status; }
-
-    /** @return ID pengembara yang mengambil quest */
     public String getAssignedWandererId() { return assignedWandererId; }
-
-    /** @return Durasi hari yang diperlukan */
     public int getDaysRequired() { return daysRequired; }
-
-    /** @return Hari saat quest diambil */
     public int getDayTaken() { return dayTaken; }
 
-    // ===================== Status Checks =====================
+    // --- ngecek status quest ---
 
-    /** @return true jika status == "tersedia" */
+    // true kalau quest belum diambil siapapun
     public boolean isAvailable() { return status.equals("tersedia"); }
 
-    /** @return true jika status == "diambil" */
+    // true kalau quest lagi dikerjain seseorang
     public boolean isTaken() { return status.equals("diambil"); }
 
-    /** @return true jika status == "selesai" */
+    // true kalau quest udah kelar
     public boolean isCompleted() { return status.equals("selesai"); }
 
-    // ===================== Methods =====================
-
-    /**
-     * Meng-assign quest ke pengembara pada hari tertentu.
-     * @param wandererId ID pengembara
-     * @param currentDay Hari saat quest diambil
-     */
+    // assign quest ke pengembara tertentu, catat juga hari pengambilannya
     public void assignTo(String wandererId, int currentDay) {
         this.assignedWandererId = wandererId;
         this.dayTaken = currentDay;
         this.status = "diambil";
     }
 
-    /** Menyelesaikan quest (set status = "selesai"). */
+    // tandain quest ini udah selesai
     public void complete() {
         this.status = "selesai";
     }
 
-    /**
-     * Mengembalikan status untuk ditampilkan.
-     * Jika diambil: "diambil-" + assignedWandererId, selain itu: status biasa.
-     * @return String status tampilan
-     */
+    // kalau diambil tampilin "diambil-P1" atau apapun id nya, selain itu tampilin status biasa
     public String getDisplayStatus() {
         if (isTaken()) return "diambil-" + assignedWandererId;
         return status;
     }
 
-    /**
-     * Mengembalikan informasi quest yang terformat untuk ditampilkan.
-     * @return String informasi quest
-     */
+    // format string buat nampilin info quest
     public String getDisplayString() {
         return "ID Quest: " + id + "\n"
              + "Nama Quest: " + name + "\n"

@@ -1,36 +1,31 @@
-/**
- * Class yang mengatur seluruh logika bisnis program BurhanQuest v2.
- * Menyimpan data quest dan pengembara menggunakan array biasa (bukan ArrayList/Collection).
- * Tidak menggunakan Scanner maupun System.out (I/O hanya di Main).
- */
+// class yang ngatur semua logika program, mulai dari login, tambah quest/pengembara, ambil quest, sampai filter/sort
 public class GameManager {
 
+    // kredensial admin, hardcode sesuai soal
     private static final String ADMIN_USERNAME = "burhan";
     private static final String ADMIN_PASSWORD = "burunghantu123";
 
+    // pake array biasa, ga boleh pake arraylist/collections
     private Quest[] quests = new Quest[1000];
     private int questCount = 0;
 
     private Wanderer[] wanderers = new Wanderer[1000];
     private int wandererCount = 0;
 
-    private int currentDay = 1;
+    private int currentDay = 1; // hari dimulai dari 1
 
-    // ===================== Day System =====================
+    // --- sistem hari ---
 
-    /** @return Hari saat ini */
     public int getCurrentDay() { return currentDay; }
 
-    /**
-     * Memajukan hari ke depan dan mengecek quest yang selesai.
-     * @return String yang menggambarkan peristiwa yang terjadi saat hari berganti
-     */
+    // majuin hari, sekalian cek quest mana yang udah selesai
     public String advanceDay() {
         currentDay++;
         StringBuilder sb = new StringBuilder("Hari berganti menjadi hari ke-" + currentDay + ".");
 
         boolean anyCompleted = false;
         for (int i = 0; i < questCount; i++) {
+            // quest selesai kalau hari ini >= hari ambil + durasi
             if (quests[i].isTaken()
                     && currentDay >= quests[i].getDayTaken() + quests[i].getDaysRequired()) {
 
@@ -56,15 +51,9 @@ public class GameManager {
         return sb.toString();
     }
 
-    // ===================== Authentication =====================
+    // --- login ---
 
-    /**
-     * Melakukan login.
-     * @param username Username yang diinput
-     * @param password Password yang diinput
-     * @return "admin" jika login sebagai admin, nama pengembara jika login sebagai pengembara,
-     *         null jika tidak cocok
-     */
+    // return "admin" kalau admin, return nama kalau pengembara, null kalau salah
     public String login(String username, String password) {
         if (ADMIN_USERNAME.equals(username) && ADMIN_PASSWORD.equals(password)) {
             return "admin";
@@ -77,11 +66,7 @@ public class GameManager {
         return null;
     }
 
-    /**
-     * Mendapatkan ID pengembara berdasarkan username.
-     * @param username Username pengembara
-     * @return ID pengembara, atau null jika tidak ditemukan
-     */
+    // cari id pengembara dari username nya
     public String getWandererIdByUsername(String username) {
         for (int i = 0; i < wandererCount; i++) {
             if (wanderers[i].getUsername().equals(username)) {
@@ -91,21 +76,12 @@ public class GameManager {
         return null;
     }
 
-    // ===================== Quest Management =====================
+    // --- tambah quest ---
 
-    /** @return Nomor quest berikutnya (untuk ditampilkan saat penambahan) */
+    // buat nampilin nomor quest berikutnya waktu input
     public int getNextQuestNumber() { return questCount + 1; }
 
-    /**
-     * Menambahkan quest baru dengan validasi input.
-     * @param name         Nama quest (raw string dari input)
-     * @param description  Deskripsi quest
-     * @param rewardStr    Reward koin (string)
-     * @param bonusExpStr  Bonus exp (string)
-     * @param difficulty   Tingkat kesulitan
-     * @param daysRequiredStr Durasi hari (string)
-     * @return "invalid" jika input tidak valid, "success" jika berhasil
-     */
+    // validasi semua input dulu, kalau ada yang salah return "invalid"
     public String addQuest(String name, String description,
                            String rewardStr, String bonusExpStr,
                            String difficulty, String daysRequiredStr) {
@@ -130,19 +106,11 @@ public class GameManager {
         return "success";
     }
 
-    // ===================== Wanderer Management =====================
+    // --- tambah pengembara ---
 
-    /** @return Nomor pengembara berikutnya (untuk ditampilkan saat penambahan) */
     public int getNextWandererNumber() { return wandererCount + 1; }
 
-    /**
-     * Menambahkan pengembara baru dengan validasi input.
-     * @param name     Nama pengembara
-     * @param username Username pengembara
-     * @param password Password pengembara
-     * @return "invalid" jika format input salah, "username_taken" jika username sudah dipakai,
-     *         "success" jika berhasil
-     */
+    // validasi nama, username, password. return "invalid", "username_taken", atau "success"
     public String addWanderer(String name, String username, String password) {
         boolean nameOk = isValidWandererName(name);
         boolean usernameFormatOk = isValidUsernameFormat(username);
@@ -159,12 +127,9 @@ public class GameManager {
         return "success";
     }
 
-    // ===================== Display Data =====================
+    // --- tampilkan data ---
 
-    /**
-     * Mengembalikan string daftar semua quest.
-     * @return String daftar quest
-     */
+    // nampilin semua quest
     public String getQuestsDisplay() {
         if (questCount == 0) {
             return "Quest yang terdaftar:\n(Belum ada quest yang terdaftar.)";
@@ -176,10 +141,7 @@ public class GameManager {
         return sb.toString();
     }
 
-    /**
-     * Mengembalikan string daftar semua pengembara.
-     * @return String daftar pengembara
-     */
+    // nampilin semua pengembara
     public String getWanderersDisplay() {
         if (wandererCount == 0) {
             return "Pengembara yang terdaftar:\n(Belum ada pengembara yang terdaftar.)";
@@ -191,33 +153,22 @@ public class GameManager {
         return sb.toString();
     }
 
-    /**
-     * Mengembalikan data diri pengembara berdasarkan ID.
-     * @param wandererId ID pengembara
-     * @return String data diri pengembara dengan header "=== Data Diri ==="
-     */
+    // nampilin data diri pengembara yang lagi login
     public String getWandererDataDisplay(String wandererId) {
         Wanderer w = findWandererById(wandererId);
         if (w == null) return "Pengembara tidak ditemukan.";
         return "=== Data Diri ===\n" + w.getDisplayString();
     }
 
-    // ===================== Take Quest =====================
+    // --- ambil quest ---
 
-    /**
-     * Pengembara mengambil quest.
-     * @param wandererId ID pengembara
-     * @param questId    ID quest yang ingin diambil
-     * @return "not_available" (pengembara sedang dalam quest),
-     *         "quest_not_found" (quest tidak ada/sudah diambil/selesai),
-     *         "level_insufficient" (level tidak memenuhi syarat),
-     *         "success" jika berhasil
-     */
+    // pengembara minta ngambil quest, ada beberapa kondisi yang dicek
     public String takeQuest(String wandererId, String questId) {
         Wanderer wanderer = findWandererById(wandererId);
         if (wanderer == null) return "wanderer_not_found";
-        if (!wanderer.isAvailable()) return "not_available";
+        if (!wanderer.isAvailable()) return "not_available"; // lagi dalam quest
 
+        // cari quest yang id nya cocok dan masih tersedia
         Quest quest = null;
         for (int i = 0; i < questCount; i++) {
             if (quests[i].getId().equalsIgnoreCase(questId) && quests[i].isAvailable()) {
@@ -233,24 +184,16 @@ public class GameManager {
         return "success";
     }
 
-    /**
-     * Mengecek apakah pengembara sedang dalam quest.
-     * @param wandererId ID pengembara
-     * @return true jika sedang dalam quest
-     */
+    // ngecek apakah pengembara lagi dalam quest
     public boolean isWandererInQuest(String wandererId) {
         Wanderer w = findWandererById(wandererId);
         if (w == null) return false;
         return !w.isAvailable();
     }
 
-    // ===================== Filter Quest =====================
+    // --- filter quest ---
 
-    /**
-     * Memfilter quest berdasarkan status.
-     * @param status Status yang difilter ("tersedia", "diambil", "selesai")
-     * @return String daftar quest terfilter
-     */
+    // filter quest berdasarkan status (tersedia/diambil/selesai)
     public String filterQuestsByStatus(String status) {
         StringBuilder sb = new StringBuilder("Daftar quest terfilter:");
         boolean found = false;
@@ -264,11 +207,7 @@ public class GameManager {
         return sb.toString();
     }
 
-    /**
-     * Memfilter quest berdasarkan tingkat kesulitan.
-     * @param difficulty Tingkat kesulitan yang difilter
-     * @return String daftar quest terfilter
-     */
+    // filter quest berdasarkan tingkat kesulitan
     public String filterQuestsByDifficulty(String difficulty) {
         StringBuilder sb = new StringBuilder("Daftar quest terfilter:");
         boolean found = false;
@@ -282,13 +221,9 @@ public class GameManager {
         return sb.toString();
     }
 
-    // ===================== Filter Wanderer =====================
+    // --- filter pengembara ---
 
-    /**
-     * Memfilter pengembara berdasarkan status.
-     * @param status Status yang difilter ("kosong" atau "dalam quest")
-     * @return String daftar pengembara terfilter
-     */
+    // filter pengembara berdasarkan status (kosong / dalam quest)
     public String filterWanderersByStatus(String status) {
         StringBuilder sb = new StringBuilder("Daftar pengembara terfilter:");
         boolean found = false;
@@ -302,12 +237,7 @@ public class GameManager {
         return sb.toString();
     }
 
-    /**
-     * Memfilter pengembara berdasarkan rentang level (inklusif).
-     * @param min Batas bawah level
-     * @param max Batas atas level
-     * @return String daftar pengembara terfilter
-     */
+    // filter pengembara berdasarkan rentang level, inklusif
     public String filterWanderersByLevelRange(int min, int max) {
         StringBuilder sb = new StringBuilder("Daftar pengembara terfilter:");
         boolean found = false;
@@ -321,16 +251,12 @@ public class GameManager {
         return sb.toString();
     }
 
-    // ===================== Sort Quest =====================
+    // --- sort quest ---
 
-    /**
-     * Mengurutkan dan menampilkan daftar quest berdasarkan tingkat kesulitan.
-     * @param order "asc" atau "desc"
-     * @return String daftar quest terurut
-     */
+    // urutkan quest berdasarkan tingkat kesulitan (mudah < menengah < sulit)
     public String sortQuestsByDifficulty(String order) {
         Quest[] sorted = copyQuestArray();
-        // Bubble sort berdasarkan bobot kesulitan
+        // bubble sort
         for (int i = 0; i < questCount - 1; i++) {
             for (int j = 0; j < questCount - 1 - i; j++) {
                 int w1 = difficultyWeight(sorted[j].getDifficulty());
@@ -346,11 +272,7 @@ public class GameManager {
         return buildQuestListString(sorted);
     }
 
-    /**
-     * Mengurutkan dan menampilkan daftar quest berdasarkan reward.
-     * @param order "asc" atau "desc"
-     * @return String daftar quest terurut
-     */
+    // urutkan quest berdasarkan reward
     public String sortQuestsByReward(String order) {
         Quest[] sorted = copyQuestArray();
         for (int i = 0; i < questCount - 1; i++) {
@@ -368,13 +290,9 @@ public class GameManager {
         return buildQuestListString(sorted);
     }
 
-    // ===================== Sort Wanderer =====================
+    // --- sort pengembara ---
 
-    /**
-     * Mengurutkan dan menampilkan daftar pengembara berdasarkan nama (lexicographic, case-insensitive).
-     * @param order "asc" atau "desc"
-     * @return String daftar pengembara terurut
-     */
+    // urutkan pengembara berdasarkan nama, case-insensitive
     public String sortWanderersByName(String order) {
         Wanderer[] sorted = copyWandererArray();
         for (int i = 0; i < wandererCount - 1; i++) {
@@ -391,11 +309,7 @@ public class GameManager {
         return buildWandererListString(sorted);
     }
 
-    /**
-     * Mengurutkan dan menampilkan daftar pengembara berdasarkan level.
-     * @param order "asc" atau "desc"
-     * @return String daftar pengembara terurut
-     */
+    // urutkan pengembara berdasarkan level
     public String sortWanderersByLevel(String order) {
         Wanderer[] sorted = copyWandererArray();
         for (int i = 0; i < wandererCount - 1; i++) {
@@ -413,13 +327,9 @@ public class GameManager {
         return buildWandererListString(sorted);
     }
 
-    // ===================== Validation Helpers =====================
+    // --- validasi input ---
 
-    /**
-     * Mengecek apakah username tersedia (tidak dipakai admin atau pengembara lain).
-     * @param username Username yang dicek
-     * @return true jika username tersedia
-     */
+    // cek apakah username belum dipakai (admin atau pengembara lain)
     public boolean isUsernameAvailable(String username) {
         if (ADMIN_USERNAME.equalsIgnoreCase(username)) return false;
         for (int i = 0; i < wandererCount; i++) {
@@ -428,21 +338,13 @@ public class GameManager {
         return true;
     }
 
-    /**
-     * Memvalidasi teks quest (nama/deskripsi): hanya alfanumerik dan spasi, tidak boleh kosong.
-     * @param text Teks yang dicek
-     * @return true jika valid
-     */
+    // nama/deskripsi quest hanya boleh huruf, angka, dan spasi, ga boleh kosong
     public boolean isValidQuestTextField(String text) {
         if (text == null || text.trim().isEmpty()) return false;
         return text.matches("[a-zA-Z0-9 ]+");
     }
 
-    /**
-     * Memvalidasi string sebagai bilangan bulat non-negatif.
-     * @param s String yang dicek
-     * @return true jika valid
-     */
+    // reward/bonusexp harus angka >= 0
     public boolean isValidNonNegativeInt(String s) {
         if (s == null || s.trim().isEmpty()) return false;
         try {
@@ -452,11 +354,7 @@ public class GameManager {
         }
     }
 
-    /**
-     * Memvalidasi string sebagai bilangan bulat positif.
-     * @param s String yang dicek
-     * @return true jika valid
-     */
+    // durasi hari harus angka > 0
     public boolean isValidPositiveInt(String s) {
         if (s == null || s.trim().isEmpty()) return false;
         try {
@@ -466,75 +364,49 @@ public class GameManager {
         }
     }
 
-    /**
-     * Memvalidasi tingkat kesulitan quest.
-     * @param difficulty Tingkat kesulitan yang dicek
-     * @return true jika valid (mudah/menengah/sulit, case-insensitive)
-     */
+    // tingkat kesulitan harus salah satu dari tiga ini
     public boolean isValidDifficulty(String difficulty) {
         if (difficulty == null) return false;
         String d = difficulty.trim().toLowerCase();
         return d.equals("mudah") || d.equals("menengah") || d.equals("sulit");
     }
 
-    /**
-     * Memvalidasi nama pengembara: hanya huruf dan spasi, tidak kosong, title case (kapital di awal tiap kata).
-     * @param name Nama yang dicek
-     * @return true jika valid
-     */
+    // nama pengembara hanya boleh huruf dan spasi, title case, ga ada spasi ganda
     public boolean isValidWandererName(String name) {
         if (name == null || name.trim().isEmpty()) return false;
         if (!name.matches("[a-zA-Z ]+")) return false;
-        // Tidak boleh ada spasi ganda
-        if (name.contains("  ")) return false;
-        // Trim dan cek title case
+        if (name.contains("  ")) return false; // ga boleh spasi ganda
         String trimmed = name.trim();
         String[] parts = trimmed.split(" ");
         for (String part : parts) {
             if (part.isEmpty()) return false;
-            if (!Character.isUpperCase(part.charAt(0))) return false;
+            if (!Character.isUpperCase(part.charAt(0))) return false; // huruf pertama harus kapital
             for (int i = 1; i < part.length(); i++) {
-                if (!Character.isLowerCase(part.charAt(i))) return false;
+                if (!Character.isLowerCase(part.charAt(i))) return false; // sisanya harus lowercase
             }
         }
         return true;
     }
 
-    /**
-     * Memvalidasi format username: satu atau lebih karakter huruf, angka, atau underscore.
-     * @param username Username yang dicek
-     * @return true jika valid
-     */
+    // username hanya boleh huruf, angka, underscore
     public boolean isValidUsernameFormat(String username) {
         if (username == null || username.isEmpty()) return false;
         return username.matches("[a-zA-Z0-9_]+");
     }
 
-    /**
-     * Memvalidasi status quest untuk filter.
-     * @param status Status yang dicek
-     * @return true jika valid ("tersedia", "diambil", "selesai")
-     */
+    // status quest yang valid buat filter
     public boolean isValidQuestStatus(String status) {
         return status.equals("tersedia") || status.equals("diambil") || status.equals("selesai");
     }
 
-    /**
-     * Memvalidasi status pengembara untuk filter.
-     * @param status Status yang dicek
-     * @return true jika valid ("kosong", "dalam quest")
-     */
+    // status pengembara yang valid buat filter
     public boolean isValidWandererStatus(String status) {
         return status.equals("kosong") || status.equals("dalam quest");
     }
 
-    // ===================== Private Helpers =====================
+    // --- helper private ---
 
-    /**
-     * Mencari pengembara berdasarkan ID.
-     * @param id ID pengembara
-     * @return Objek Wanderer, atau null jika tidak ditemukan
-     */
+    // nyari pengembara berdasarkan id
     private Wanderer findWandererById(String id) {
         for (int i = 0; i < wandererCount; i++) {
             if (wanderers[i].getId().equals(id)) return wanderers[i];
@@ -542,31 +414,21 @@ public class GameManager {
         return null;
     }
 
-    /**
-     * Menyalin array quest aktif ke array baru (hanya sebanyak questCount).
-     * @return Salinan array quest
-     */
+    // copy array quest buat sorting (biar yang asli ga keubah)
     private Quest[] copyQuestArray() {
         Quest[] copy = new Quest[questCount];
         for (int i = 0; i < questCount; i++) copy[i] = quests[i];
         return copy;
     }
 
-    /**
-     * Menyalin array pengembara aktif ke array baru (hanya sebanyak wandererCount).
-     * @return Salinan array pengembara
-     */
+    // copy array pengembara buat sorting
     private Wanderer[] copyWandererArray() {
         Wanderer[] copy = new Wanderer[wandererCount];
         for (int i = 0; i < wandererCount; i++) copy[i] = wanderers[i];
         return copy;
     }
 
-    /**
-     * Membangun string daftar quest dari array.
-     * @param arr Array quest
-     * @return String daftar quest terurut
-     */
+    // build string dari array quest, dipake setelah sorting
     private String buildQuestListString(Quest[] arr) {
         StringBuilder sb = new StringBuilder("Daftar quest terurut:");
         for (Quest q : arr) {
@@ -575,11 +437,7 @@ public class GameManager {
         return sb.toString();
     }
 
-    /**
-     * Membangun string daftar pengembara dari array.
-     * @param arr Array pengembara
-     * @return String daftar pengembara terurut
-     */
+    // build string dari array pengembara, dipake setelah sorting
     private String buildWandererListString(Wanderer[] arr) {
         StringBuilder sb = new StringBuilder("Daftar pengembara terurut:");
         for (Wanderer w : arr) {
@@ -588,12 +446,8 @@ public class GameManager {
         return sb.toString();
     }
 
-    /**
-     * Mengembalikan bobot numerik tingkat kesulitan untuk pengurutan.
-     * mudah=1, menengah=2, sulit=3
-     * @param difficulty Tingkat kesulitan
-     * @return Bobot numerik
-     */
+    // konversi kesulitan ke angka buat ngebandingin waktu sorting
+    // mudah=1, menengah=2, sulit=3
     private int difficultyWeight(String difficulty) {
         if (difficulty.equals("mudah")) return 1;
         if (difficulty.equals("menengah")) return 2;
