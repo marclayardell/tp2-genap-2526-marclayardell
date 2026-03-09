@@ -25,7 +25,7 @@ public class Wanderer {
         this.status = "kosong";
     }
 
-    // --- getters ---
+    // --- getters --
 
     public String getId() { return id; }
     public String getName() { return name; }
