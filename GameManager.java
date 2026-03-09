@@ -5,7 +5,7 @@ public class GameManager {
     private static final String ADMIN_USERNAME = "burhan";
     private static final String ADMIN_PASSWORD = "burunghantu123";
 
-    // pake array biasa, ga boleh pake arraylist/collections
+    // pake array biasa, ga boleh pake arraylist/collection
     private Quest[] quests = new Quest[1000];
     private int questCount = 0;
 

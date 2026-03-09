@@ -1,7 +1,7 @@
 // class utk nyimpen data quest
 public class Quest {
 
-    private String id;           // format "Q1", "Q2", dst
+    private String id;           // format "Q1", "Q2", dkk
     private String name;
     private String description;
     private int reward;          // reward koin

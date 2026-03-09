@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-// class utama, cuma ngurusin input output
+// class utama, cuma ngurusin input or output
 // logika bisnis semuanya di gamemanager
 // nama  : marclay ardell taufiqurrachman harahap
 // npm   : 2506621024
